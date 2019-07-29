@@ -51,7 +51,7 @@ class EV3Controller(VRepClientController):
         self.left_vel = None
         self.right_vel = None
         self.position = [None, None, None]
-
+        self.dist_between_wheels = 1.0
 
     def handle_objects(self):
         """
@@ -93,7 +93,7 @@ class EV3Controller(VRepClientController):
             if self.components['motor_c']['id'] != None:
                 res = vrep.simxSetJointTargetVelocity(
                     self.client_id, self.components['motor_c']['id'], speed,
-                    vrep.simx_opmode_streaming)
+                    vrep.simx_opmode_buffer)
             err_list = parse_error(res)
             if res != 0 and self.debug:
                 err_print(prefix="SET SPEED LEFT: ", message=err_list)
@@ -209,6 +209,7 @@ class EV3Controller(VRepClientController):
             rot {[type]} -- [description]
         """
 
+        # control of the input variables
         if adv > 100:
             adv = 100
         elif adv < -100:
@@ -217,6 +218,16 @@ class EV3Controller(VRepClientController):
             rot = math.pi
         elif rot < -math.pi:
             rot = -math.pi
+
+        spd_left = adv - (self.dist_between_wheels / 2) * rot
+        spd_right = adv + (self.dist_between_wheels / 2) * rot
+        
+        print("SPEED:", spd_left, spd_right)
+        self.set_speed_left(spd_left)
+        self.set_speed_right(spd_right)
+
+    
+        
 
         
 

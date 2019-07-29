@@ -50,9 +50,7 @@ class SpecificWorker(GenericWorker):
 	@QtCore.Slot()
 	def compute(self):
 		print 'SpecificWorker.compute...'
-		print(self.getBasePose())
-		self.correctOdometer(0,0,math.pi)
-		raw_input()
+		self.setSpeedBase(50, math.pi)
 		return True
 
 
@@ -131,7 +129,7 @@ class SpecificWorker(GenericWorker):
 	#
 	def setSpeedBase(self, adv, rot):
 		self.handler.set_global_speed(adv, rot)
-		pass
+		
 	
 	def set_speed_left(self, vel):
 		self.handler.set_speed_left(vel)
