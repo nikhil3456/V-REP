@@ -34,7 +34,7 @@ import math
 class SpecificWorker(GenericWorker):
 	def __init__(self, proxy_map):
 		super(SpecificWorker, self).__init__(proxy_map)
-		self.handler = EV3Controller("158.49.227.10", 19998, debug=True)
+		self.handler = EV3Controller("158.49.227.95", 19998, debug=True)
 		self.timer.timeout.connect(self.compute)
 		self.Period = 2000
 		self.timer.start(self.Period)
@@ -50,7 +50,7 @@ class SpecificWorker(GenericWorker):
 	@QtCore.Slot()
 	def compute(self):
 		print 'SpecificWorker.compute...'
-		self.setSpeedBase(50, math.pi)
+		self.setSpeedBase(0, math.pi)
 		return True
 
 
