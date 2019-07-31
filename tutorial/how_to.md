@@ -240,6 +240,41 @@ class SpecificWorker(GenericWorker):
 All of these empty methods needs to be implemented because belongs to the _DifferentialRobot_ interface, we just need to complete the code to have a fully functional component.
 
 
+## Implementing the controller to enable LEGO_EV3 to follow a path
+
+Open the file src/specificworker.py and paste the following code in the 'compute' method of the class SpecificWorker :
+
+```python
+self.handler.startSimulation() # To start the simulation
+self.handler.set_speed_left(1.0)
+self.handler.set_speed_right(1.0)
+
+self.handler.triggerSynchronous()
+while True:
+    '''Very simple robot line following logic.'''
+    l,m,r = self.handler.get_vis_sensors()
+    if self.is_green(m): # green color detected by the mid sensor
+        self.handler.set_speed_left(1.0)
+        self.handler.set_speed_right(1.0)
+    elif self.is_green(r): # green color detected by the right sensor
+        self.handler.set_speed_left(1.0)
+        self.handler.set_speed_right(0.2)        
+    elif self.is_green(l): # green color detected by the left sensor
+        self.handler.set_speed_left(0.2)
+        self.handler.set_speed_right(1.0)
+
+    self.handler.triggerSynchronous()
+
+return True
+```
+The above code implements a simple line follwing logic, it detects a green colour on the square floor of the scene and according to whether the color is detected by the right, lift or mid sensor it sets the speed of left and right motors of the LEGO robot. To detect whether the color detected by a particular sensor is green or not, create the following function as one of the methods of the class SpecificWorker:
+
+```python
+def is_green(self, a):
+    """Returns true if the reading from Robot.get_vis_sensors() is green."""
+    return (a[0] < 0.4 and a[2] < 0.4) and (a[1] > 0.5)
+```
+
 
 ## Implementing the VREP remote API
 
@@ -270,7 +305,7 @@ Now, we just need to import to the `.py` code where we will use it
 
 ### Example: How EV3_LEGO component implements the V-REP library
 
-In this example, the component uses a class that works as a controller of V-REP named  [`EV3_LEGO_controller.py`](https://github.com/JMAgundezG/V-REP/blob/master/components/EV3_VREP/src/EV3_LEGO_controller.py) which inherits from another class that works as a client of V-REP named [`vrep_client_controller.py`](https://github.com/JMAgundezG/V-REP/blob/master/components/EV3_VREP/src/vrep_client_controller.py) 
+In this example, the component uses a class that works as a controller of V-REP named  [`EV3_LEGO_controller.py`](https://github.com/nikhil3456/robocomp/blob/V-REP_testing/components/EV3_VREP/src/EV3_LEGO_controller.py) which inherits from another class that works as a client of V-REP named [`vrep_client_controller.py`](https://github.com/JMAgundezG/V-REP/blob/master/components/EV3_VREP/src/vrep_client_controller.py) 
 
 
 
@@ -297,7 +332,7 @@ As we can see in the code, we create an _EV3Controller_ object using the V-REP i
 
 
 
-After implementing the code and having in the  `compute()` method the instructions of the component, we just need to run our component. We need to have V-REP already running on any computer. and execute this command on our component folder
+After implementing the code and having in the  `compute()` method the instructions of the component, we just need to run our component. We need to have V-REP already running on any computer. and execute this command on our component folder(To test the controller run the [remote_demo.ttt](https://github.com/nikhil3456/robocomp/blob/V-REP_testing/components/remote_demo.ttt) in V-REP).
 
 ```bash
 python src/EV3_VREP.py etc/config 
